@@ -32,3 +32,9 @@ export class ForbidenError extends HttpError {
     super(403, message);
   }
 }
+
+export class AppError extends HttpError {
+  constructor(message = "INTERNAL SERVER ERROR") {
+    super(500, message);
+  }
+}
