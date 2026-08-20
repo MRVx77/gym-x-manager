@@ -1,18 +1,18 @@
 import jwt from "jsonwebtoken";
-import { env } from "process";
+import { env } from "../config/env";
 
-export interface JWTPlayload {
-  userId: string;
+export interface JWTPayload {
+  userId: number;
   email: string;
   role: string;
 }
 
-export function signToken(payload: JWTPlayload): string {
-  return jwt.sign(payload, env.JWT_SECRET as any, {
-    expiresIn: env.JWT_EXPIRES_IN as any,
+export function signToken(payload: JWTPayload): string {
+  return jwt.sign(payload, env.JWT_SECRET, {
+    expiresIn: 60 * 60 * 24 * 7,
   });
 }
 
-export function verifyToken(token: string): JWTPlayload {
-  return jwt.verify(token, env.JWT_SECRET as string) as JWTPlayload;
+export function verifyToken(token: string): JWTPayload {
+  return jwt.verify(token, env.JWT_SECRET as string) as JWTPayload;
 }

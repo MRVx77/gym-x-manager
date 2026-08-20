@@ -1,11 +1,11 @@
 import { NextFunction, Request, Response } from "express";
-import { JWTPlayload, verifyToken } from "../lib/jwt";
+import { JWTPayload, verifyToken } from "../lib/jwt";
 import { UnauthorizedError } from "../lib/errors";
 
 declare global {
   namespace Express {
     interface Request {
-      user?: JWTPlayload;
+      user?: JWTPayload;
     }
   }
 }

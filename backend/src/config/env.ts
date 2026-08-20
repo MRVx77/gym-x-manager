@@ -12,7 +12,6 @@ const EnvSchema = z.object({
   DB_PASSWORD: z.string().default("npg_8XJ1nvDldHfK"),
   DB_SSL: z.string().optional().default("false"),
   JWT_SECRET: z.string().min(10),
-  JWT_EXPIRES_IN: z.string().default("7d"),
 });
 
 const parse = EnvSchema.safeParse(process.env);
