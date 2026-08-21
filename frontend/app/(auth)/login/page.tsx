@@ -1,5 +1,9 @@
 "use client";
 
+import api from "@/lib/api";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+
 // ─────────────────────────────────────────────
 // 📌 YOUR TASK — Add logic here:
 //
@@ -25,6 +29,27 @@
 
 export default function LoginPage() {
   // 👇 declare your state and router here
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+    try {
+      const result = await api.post("/api/auth/login", { email, password });
+      localStorage.setItem("token", result.data.token);
+      router.push("/dashboard");
+    } catch (error: any) {
+      setError(error.response?.data.message || "something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-[#0a0a0f]">
@@ -49,20 +74,15 @@ export default function LoginPage() {
         </p>
 
         {/* ── Error message ── */}
-        {/* 👇 Render your error state here — show only when error is not empty */}
-        {/* Example:
-          {error && (
-            <div className="mb-4 px-4 py-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm text-center">
-              {error}
-            </div>
-          )}
-        */}
+
+        {error && (
+          <div className="mb-4 px-4 py-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm text-center">
+            {error}
+          </div>
+        )}
 
         {/* ── Form ── */}
-        <form
-          // 👇 add onSubmit={handleSubmit} here
-          className="space-y-5"
-        >
+        <form onSubmit={handleSubmit} className="space-y-5">
           {/* Email */}
           <div>
             <label
@@ -75,7 +95,8 @@ export default function LoginPage() {
               id="email"
               type="email"
               placeholder="Enter your email"
-              // 👇 add value={email} and onChange={(e) => setEmail(e.target.value)}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/20 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition"
             />
           </div>
@@ -92,7 +113,8 @@ export default function LoginPage() {
               id="password"
               type="password"
               placeholder="Enter your password"
-              // 👇 add value={password} and onChange={(e) => setPassword(e.target.value)}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/20 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition"
             />
           </div>
@@ -100,11 +122,10 @@ export default function LoginPage() {
           {/* Submit button */}
           <button
             type="submit"
-            // 👇 add disabled={loading} here
+            disabled={loading}
             className="w-full py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-500 hover:to-blue-400 transition-all shadow-lg shadow-purple-900/30 disabled:opacity-50 disabled:cursor-not-allowed mt-2"
           >
-            {/* 👇 Replace "Login" with: loading ? "Logging in..." : "Login" */}
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 

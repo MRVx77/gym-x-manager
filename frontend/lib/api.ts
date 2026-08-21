@@ -1,8 +1,7 @@
 import axios from "axios";
-import "dotenv/config";
 
 const api = axios.create({
-  baseURL: process.env.BACK_END_URL,
+  baseURL: process.env.NEXT_PUBLIC_BACK_END_URL,
 });
 
 api.interceptors.request.use((config) => {

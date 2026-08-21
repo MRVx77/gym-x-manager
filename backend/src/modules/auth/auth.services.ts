@@ -28,12 +28,14 @@ export async function registerUser(input: RegisterInput) {
     })
     .returning({
       id: users.id,
+      name: users.name,
       email: users.email,
       role: users.role,
     });
 
   const token = signToken({
     userId: user.id,
+    name: user.name,
     email: user.email,
     role: user.role,
   });
@@ -59,6 +61,7 @@ export async function loginUser(input: LoginInput) {
 
   const token = signToken({
     userId: user.id,
+    name: user.name,
     email: user.email,
     role: user.role,
   });

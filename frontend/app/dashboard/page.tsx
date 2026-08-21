@@ -1,5 +1,9 @@
 "use client";
 
+import api from "@/lib/api";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+
 // ─────────────────────────────────────────────
 // 📌 YOUR TASK — Add logic here:
 //
@@ -25,13 +29,41 @@
 // ─────────────────────────────────────────────
 
 export default function DashboardPage() {
-  // 👇 declare your state and router here
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const router = useRouter();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    router.push("/login");
+  };
 
   // 👇 write your useEffect here
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      router.push("/login");
+      return;
+    }
+
+    api
+      .get("/api/auth/me")
+      .then((res) => {
+        setUser(res.data.user);
+      })
+      .catch(() => {
+        localStorage.removeItem("token");
+        router.push("/login");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [router]);
 
   // Show loading spinner while fetching user
-  // 👇 Replace false with your loading state:
-  if (false) {
+  if (loading) {
     return (
       <main className="min-h-screen flex items-center justify-center bg-[#0a0a0f]">
         <div className="w-10 h-10 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
@@ -51,7 +83,7 @@ export default function DashboardPage() {
         </div>
 
         <button
-          // 👇 add onClick={handleLogout}
+          onClick={handleLogout}
           className="px-4 py-2 rounded-lg text-sm font-medium text-white/60 hover:text-white border border-white/10 hover:border-white/30 transition"
         >
           Logout
@@ -66,15 +98,10 @@ export default function DashboardPage() {
             Welcome back
           </p>
           <h2 className="text-3xl font-bold text-white mb-2">
-            {/* 👇 Replace "User" with user?.email or user?.name */}
-            Hello, User 👋
+            Hello, {user?.name} 👋
           </h2>
           <p className="text-white/40 text-sm">
-            {/* 👇 Replace "member" with user?.role */}
-            Role:{" "}
-            <span className="capitalize text-white/70">
-              member
-            </span>
+            Role: <span className="capitalize text-white/70">{user?.role}</span>
           </p>
         </div>
 
