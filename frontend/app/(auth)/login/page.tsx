@@ -4,29 +4,6 @@ import api from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-// ─────────────────────────────────────────────
-// 📌 YOUR TASK — Add logic here:
-//
-// 1. Import useState from react
-// 2. Import useRouter from next/navigation
-// 3. Import api from "@/lib/api"
-//
-// 4. Create state variables:
-//    - email (string)
-//    - password (string)
-//    - error (string)
-//    - loading (boolean)
-//
-// 5. Create a handleSubmit function:
-//    - Prevent default form submission
-//    - Set loading to true, clear error
-//    - Call: api.post("/auth/login", { email, password })
-//    - On success: save token → localStorage.setItem("token", result.data.token)
-//    - Then redirect to: router.push("/dashboard")
-//    - On error: set error message from err.response.data.message
-//    - Finally: set loading to false
-// ─────────────────────────────────────────────
-
 export default function LoginPage() {
   // 👇 declare your state and router here
   const [email, setEmail] = useState("");

@@ -24,13 +24,14 @@ export async function registerUser(input: RegisterInput) {
       name: input.name,
       email: input.email,
       password: hashedPassword,
-      role: input.role,
+      role: "GYM_OWNER",
     })
     .returning({
       id: users.id,
       name: users.name,
       email: users.email,
       role: users.role,
+      gymId: users.gymId,
     });
 
   const token = signToken({
@@ -38,6 +39,7 @@ export async function registerUser(input: RegisterInput) {
     name: user.name,
     email: user.email,
     role: user.role,
+    gymId: user.gymId,
   });
 
   return { token, user };
@@ -64,6 +66,7 @@ export async function loginUser(input: LoginInput) {
     name: user.name,
     email: user.email,
     role: user.role,
+    gymId: user.gymId,
   });
 
   return { token, user: { id: user.id, email: user.email, role: user.role } };

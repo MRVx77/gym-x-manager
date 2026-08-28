@@ -6,6 +6,7 @@ export interface JWTPayload {
   name: string;
   email: string;
   role: string;
+  gymId: string | null;
 }
 
 export function signToken(payload: JWTPayload): string {
