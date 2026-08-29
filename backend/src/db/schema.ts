@@ -5,7 +5,6 @@ import {
   jsonb,
   numeric,
   pgTable,
-  serial,
   text,
   timestamp,
   uuid,
@@ -19,7 +18,7 @@ import {
 } from "./enum";
 
 export const users = pgTable("users", {
-  id: serial("id").primaryKey(),
+  id: uuid("id").defaultRandom().primaryKey(),
   name: varchar("name", { length: 100 }).notNull(),
   email: varchar("email", { length: 255 }).notNull().unique(),
   password: varchar("password", { length: 255 }).notNull(),
@@ -32,7 +31,6 @@ export const usersRelations = relations(users, ({ one }) => ({
   gym: one(gyms, { fields: [users.gymId], references: [gyms.id] }),
   member: one(members, { fields: [users.id], references: [members.userId] }),
 }));
-
 
 export const gyms = pgTable("gyms", {
   id: uuid("id").defaultRandom().primaryKey(),
