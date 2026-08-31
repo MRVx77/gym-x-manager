@@ -8,10 +8,10 @@ import {
 
 const gymRouter = Router();
 
-gymRouter.post("/create", authenticate, createGymController);
+gymRouter.use(authenticate);
 
-gymRouter.put("/update", authenticate, updateGymController);
-
-gymRouter.get("/get-my-gym", authenticate, getMyGymController);
+gymRouter.post("/create", createGymController);
+gymRouter.put("/update", updateGymController);
+gymRouter.get("/get-my-gym", getMyGymController);
 
 export default gymRouter;

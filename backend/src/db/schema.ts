@@ -11,6 +11,7 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 import {
+  genderEnum,
   membershipStatusEnum,
   notificationTypeEnum,
   onboardingStatusEnum,
@@ -88,6 +89,8 @@ export const trainers = pgTable("trainers", {
     .notNull()
     .references(() => gyms.id),
   name: varchar("name", { length: 255 }).notNull(),
+  gender: genderEnum("gender").notNull(),
+  profileImage: text("profile_image_url"),
   specialization: varchar("specialization", { length: 255 }),
   experienceYears: integer("experience_years").default(0),
   pricing: numeric("pricing", { precision: 10, scale: 2 }),

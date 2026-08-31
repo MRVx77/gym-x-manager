@@ -20,3 +20,5 @@ export const notificationTypeEnum = pgEnum("notification_type", [
   "EVENT",
   "MAINTENANCE",
 ]);
+
+export const genderEnum = pgEnum("gender", ["MALE", "FEMALE", "OTHER"]);

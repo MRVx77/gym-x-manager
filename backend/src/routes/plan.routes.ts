@@ -10,10 +10,12 @@ import { authenticate } from "../middleware/auth.middleware";
 
 const planRouter = Router();
 
-planRouter.post("/", authenticate, createMembershipHandler);
-planRouter.get("/all", authenticate, getAllPlansHandler);
-planRouter.get("/:planId", authenticate, getPlanByIdHandler);
-planRouter.patch("/:planId", authenticate, updatePlanHandler);
-planRouter.delete("/:planId", authenticate, deletePlanHandler);
+planRouter.use(authenticate);
+
+planRouter.post("/", createMembershipHandler);
+planRouter.get("/all", getAllPlansHandler);
+planRouter.get("/:planId", getPlanByIdHandler);
+planRouter.patch("/:planId", updatePlanHandler);
+planRouter.delete("/:planId", deletePlanHandler);
 
 export default planRouter;
