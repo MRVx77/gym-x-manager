@@ -12,6 +12,9 @@ const EnvSchema = z.object({
   DB_PASSWORD: z.string().default("npg_8XJ1nvDldHfK"),
   DB_SSL: z.string().optional().default("false"),
   JWT_SECRET: z.string().min(10),
+  CLOUDINARY_CLOUD_NAME: z.string(),
+  CLOUDINARY_API_KEY: z.string(),
+  CLOUDINARY_API_SECRET: z.string(),
 });
 
 const parse = EnvSchema.safeParse(process.env);

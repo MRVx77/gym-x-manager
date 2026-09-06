@@ -62,6 +62,22 @@ export async function updateTrainer(
   return updatedTrainer;
 }
 
+export async function updateTrainerPhoto(
+  gymId: string,
+  trainerId: string,
+  imageUrl: string,
+) {
+  const [updatedTrainer] = await db
+    .update(trainers)
+    .set({ profileImage: imageUrl })
+    .where(and(eq(trainers.id, trainerId), eq(trainers.gymId, gymId)))
+    .returning();
+
+  if (!updatedTrainer) throw new NotFoundError("Trainer not found");
+
+  return updatedTrainer;
+}
+
 export async function deleteTrainer(gymId: string, trainerId: string) {
   const [trainer] = await db
     .delete(trainers)

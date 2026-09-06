@@ -6,7 +6,9 @@ import {
   getTrainerById,
   getTrainers,
   updateTrainer,
+  updateTrainerPhoto,
 } from "./trainer.services";
+import { uploadToCloudinary } from "../../lib/cloudinary";
 
 export async function createTrainerHandler(req: Request, res: Response) {
   const input = createTrainerSchema.parse(req.body);
@@ -37,6 +39,25 @@ export async function updateTrainerHandler(
     req.params.trainerId!,
     input,
   );
+  res.status(200).json({ trainer });
+}
+
+export async function updateTrainerPhotoHandler(
+  req: Request<{ trainerId: string }>,
+  res: Response,
+) {
+  if (!req.file) return res.status(400).json({ message: "no file was given" });
+
+  const gymId = req.user!.gymId!;
+  const trainerId = req.params.trainerId;
+
+  const result = await uploadToCloudinary(
+    req.file.buffer,
+    "gym-manager/trainers",
+  );
+
+  const trainer = await updateTrainerPhoto(gymId, trainerId, result.secure_url);
+
   res.status(200).json({ trainer });
 }
 

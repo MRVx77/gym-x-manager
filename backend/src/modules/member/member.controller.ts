@@ -8,6 +8,7 @@ import {
   updateMember,
   updateMemberPhoto,
 } from "./member.services";
+import { uploadToCloudinary } from "../../lib/cloudinary";
 
 export async function createMemberHandler(req: Request, res: Response) {
   const gymId = req.user!.gymId!;
@@ -63,13 +64,22 @@ export async function updateMemberPhotoHandler(
   req: Request<{ id: string }>,
   res: Response,
 ) {
-  //later
-  // const uploadResult = await cloudinary.uploader.upload(req.filter.path, {
-  //     folder: "members"
-  // })
-  // const gymId = req.user!.gymId!;
-  // const memberId = req.params.id;
-  // const member = await updateMemberPhoto(memberId, gymId, uploadResult.secure_url);
-  // res.status(200).json({member});
-  res.send("Under development");
+  if (!req.file) {
+    return res.status(400).json({ message: "No file uploaded" });
+  }
+
+  const gymId = req.user!.gymId!;
+  const memberId = req.params.id;
+
+  const uploadResult = await uploadToCloudinary(
+    req.file.buffer,
+    "gym-manager/members",
+  );
+
+  const member = await updateMemberPhoto(
+    memberId,
+    gymId,
+    uploadResult.secure_url,
+  );
+  res.status(200).json({ member });
 }
