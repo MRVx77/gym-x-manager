@@ -5,7 +5,7 @@ import {
   updatePlanHandler,
   deletePlanHandler,
   getAllPlansHandler,
-} from "../modules/membership/membership.controller";
+} from "../modules/membershipPlan/membershipPlan.controller";
 import { authenticate } from "../middleware/auth.middleware";
 
 const planRouter = Router();

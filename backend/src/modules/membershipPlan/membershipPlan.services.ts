@@ -4,7 +4,7 @@ import { membershipPlans } from "../../db/schema";
 import {
   CreateMemebershipPlan,
   UpdateMembershipPlan,
-} from "./membership.schema";
+} from "./membershipPlan.schema";
 import { NotFoundError } from "../../lib/errors";
 
 export async function createMembershipPlan(

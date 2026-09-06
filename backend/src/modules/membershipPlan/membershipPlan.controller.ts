@@ -2,14 +2,14 @@ import { Request, Response } from "express";
 import {
   createMemeberShipPlanSchema,
   updateMembershipPlanSchema,
-} from "./membership.schema";
+} from "./membershipPlan.schema";
 import {
   createMembershipPlan,
   deletePlan,
   getAllPlans,
   getPlanById,
   updatePlan,
-} from "./membership.services";
+} from "./membershipPlan.services";
 
 export async function createMembershipHandler(req: Request, res: Response) {
   const input = createMemeberShipPlanSchema.parse(req.body);
