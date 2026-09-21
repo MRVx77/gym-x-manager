@@ -1,4 +1,4 @@
-import { and, eq, gte, lte, sum } from "drizzle-orm";
+import { and, eq, gte, lt, lte, sum } from "drizzle-orm";
 import { db } from "../../db/db";
 import { members, memberships, payments } from "../../db/schema";
 import { CreatePaymentInput } from "./payment.schema";
@@ -60,7 +60,7 @@ export async function getMemberPaymentHistory(gymId: string, memberId: string) {
   return db
     .select()
     .from(payments)
-    .where(eq(payments.memberId, memberId))
+    .where(and(eq(payments.gymId, gymId), eq(payments.memberId, memberId)))
     .orderBy(payments.paidAt);
 }
 
@@ -97,7 +97,7 @@ export async function getRevenueForMonth(
       and(
         eq(payments.gymId, gymId),
         gte(payments.paidAt, fromDate),
-        lte(payments.paidAt, toDate),
+        lt(payments.paidAt, toDate),
       ),
     );
 
