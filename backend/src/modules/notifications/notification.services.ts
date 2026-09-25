@@ -4,7 +4,7 @@ import { members, notifications } from "../../db/schema";
 import { SendNotificationInput } from "./notification.schema";
 import { NotFoundError } from "../../lib/errors";
 
-export async function sendNOtification(
+export async function sendNotification(
   gymId: string,
   input: SendNotificationInput,
 ) {

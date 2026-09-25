@@ -6,6 +6,7 @@ import trainerRouter from "./trainer.routes";
 import memberRouter from "./member.routes";
 import membershipRouter from "./membership.routes";
 import { memberPaymentRouter, gymPaymentRouter } from "./payment.routes";
+import { gymNotiRoutes, memberNotiRoutes } from "./notification";
 
 const apiRouter = Router();
 
@@ -20,5 +21,7 @@ apiRouter.use("/members/:memberId/payments", memberPaymentRouter);
 
 //gym-wide, not tied to one member
 apiRouter.use("/payments", gymPaymentRouter);
+apiRouter.use("/notifications", gymNotiRoutes);
+apiRouter.use("/members/:memberId/notifications", memberNotiRoutes);
 
 export default apiRouter;
