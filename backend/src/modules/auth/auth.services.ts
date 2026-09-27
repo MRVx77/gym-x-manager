@@ -55,9 +55,9 @@ export async function loginUser(input: LoginInput) {
     throw new BadRequestError("Invalid credentials or user does not exist.");
   }
 
-  const isMath = await bcrypt.compare(input.password, user.password);
+  const isMatch = await bcrypt.compare(input.password, user.password);
 
-  if (!isMath) {
+  if (!isMatch) {
     throw new BadRequestError("Invalid credentials");
   }
 
@@ -69,5 +69,13 @@ export async function loginUser(input: LoginInput) {
     gymId: user.gymId,
   });
 
-  return { token, user: { id: user.id, email: user.email, role: user.role } };
+  return {
+    token,
+    user: {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      gymId: user.gymId,
+    },
+  };
 }

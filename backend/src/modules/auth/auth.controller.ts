@@ -23,7 +23,7 @@ export async function login(req: Request, res: Response) {
   const parsed = LoginSchema.safeParse(req.body);
 
   if (!parsed.success) {
-    throw new BadRequestError("Invaild credentials", parsed.error.flatten());
+    throw new BadRequestError("Invalid credentials", parsed.error.flatten());
   }
 
   const result = await loginUser(parsed.data);

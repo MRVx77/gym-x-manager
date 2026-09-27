@@ -23,10 +23,11 @@ export default function RegisterPage() {
         name,
         email,
         password,
-        role: "member",
       });
-      localStorage.setItem("token", result.data.token);
-      router.push("/dashboard");
+      const { token, user } = result.data;
+      localStorage.setItem("token", token);
+      // Freshly registered gym owner always has gymId: null — always send to onboarding, no check needed
+      router.push("/onboarding/gym");
     } catch (error: any) {
       setError(error.response?.data.message || "something went wrong");
     } finally {

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function LoginPage() {
-  // 👇 declare your state and router here
+  // declare your state and router here
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -19,8 +19,20 @@ export default function LoginPage() {
     setLoading(true);
     try {
       const result = await api.post("/api/auth/login", { email, password });
-      localStorage.setItem("token", result.data.token);
-      router.push("/dashboard");
+      const { token, user } = result.data;
+      localStorage.setItem("token", token);
+
+      if (!user.gymId) {
+        router.push("/onboarding/gym");
+        return;
+      }
+
+      const gymRes = await api.get("/api/gym/get-my-gym");
+      if (gymRes.data.gym.onboardingStatus !== "ACTIVE") {
+        router.push("/onboarding/details");
+      } else {
+        router.push("/dashboard");
+      }
     } catch (error: any) {
       setError(error.response?.data.message || "something went wrong");
     } finally {
