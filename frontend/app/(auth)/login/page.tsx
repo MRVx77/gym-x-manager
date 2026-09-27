@@ -1,10 +1,12 @@
 "use client";
 
 import api from "@/lib/api";
+import { useAuth } from "@/lib/auth-context";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function LoginPage() {
+  const { refreshUser } = useAuth();
   // declare your state and router here
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,7 +22,9 @@ export default function LoginPage() {
     try {
       const result = await api.post("/api/auth/login", { email, password });
       const { token, user } = result.data;
+
       localStorage.setItem("token", token);
+      refreshUser();
 
       if (!user.gymId) {
         router.push("/onboarding/gym");
@@ -34,7 +38,7 @@ export default function LoginPage() {
         router.push("/dashboard");
       }
     } catch (error: any) {
-      setError(error.response?.data.message || "something went wrong");
+      setError(error.response?.data?.error || "something went wrong");
     } finally {
       setLoading(false);
     }
