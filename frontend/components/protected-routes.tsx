@@ -4,7 +4,7 @@ import api from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { Loader2 } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 type ProtectedRouteProps = {
