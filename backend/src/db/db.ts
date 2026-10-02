@@ -1,4 +1,4 @@
-import { Pool, QueryResult, QueryResultRow } from "pg";
+import { Pool } from "pg";
 import { env } from "../config/env";
 import { logger } from "../lib/logger";
 import { drizzle } from "drizzle-orm/node-postgres";

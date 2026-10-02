@@ -1,5 +1,6 @@
 "use client";
 
+import { ProtectedRoutes } from "@/components/protected-routes";
 import api from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -72,53 +73,56 @@ export default function DashboardPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#0a0a0f] text-white">
-      {/* Navbar */}
-      <nav className="border-b border-white/10 px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="text-xl">🏋️</span>
-          <span className="font-bold tracking-widest uppercase text-white">
-            Gym Manager
-          </span>
-        </div>
+    <ProtectedRoutes>
+      <main className="min-h-screen bg-[#0a0a0f] text-white">
+        {/* Navbar */}
+        <nav className="border-b border-white/10 px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="text-xl">🏋️</span>
+            <span className="font-bold tracking-widest uppercase text-white">
+              Gym Manager
+            </span>
+          </div>
 
-        <button
-          onClick={handleLogout}
-          className="px-4 py-2 rounded-lg text-sm font-medium text-white/60 hover:text-white border border-white/10 hover:border-white/30 transition"
-        >
-          Logout
-        </button>
-      </nav>
+          <button
+            onClick={handleLogout}
+            className="px-4 py-2 rounded-lg text-sm font-medium text-white/60 hover:text-white border border-white/10 hover:border-white/30 transition"
+          >
+            Logout
+          </button>
+        </nav>
 
-      {/* Content */}
-      <div className="max-w-4xl mx-auto px-6 py-12">
-        {/* Welcome card */}
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-8 mb-8">
-          <p className="text-sm text-purple-400 font-medium mb-1 uppercase tracking-widest">
-            Welcome back
-          </p>
-          <h2 className="text-3xl font-bold text-white mb-2">
-            Hello, {user?.name} 👋
-          </h2>
-          <p className="text-white/40 text-sm">
-            Role: <span className="capitalize text-white/70">{user?.role}</span>
-          </p>
-        </div>
+        {/* Content */}
+        <div className="max-w-4xl mx-auto px-6 py-12">
+          {/* Welcome card */}
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-8 mb-8">
+            <p className="text-sm text-purple-400 font-medium mb-1 uppercase tracking-widest">
+              Welcome back
+            </p>
+            <h2 className="text-3xl font-bold text-white mb-2">
+              Hello, {user?.name} 👋
+            </h2>
+            <p className="text-white/40 text-sm">
+              Role:{" "}
+              <span className="capitalize text-white/70">{user?.role}</span>
+            </p>
+          </div>
 
-        {/* Stats placeholder grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {["Members", "Plans", "Revenue"].map((label) => (
-            <div
-              key={label}
-              className="bg-white/5 border border-white/10 rounded-xl p-6 flex flex-col gap-2"
-            >
-              <p className="text-white/40 text-sm">{label}</p>
-              <p className="text-2xl font-bold text-white">—</p>
-              <p className="text-xs text-white/20">Coming soon</p>
-            </div>
-          ))}
+          {/* Stats placeholder grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {["Members", "Plans", "Revenue"].map((label) => (
+              <div
+                key={label}
+                className="bg-white/5 border border-white/10 rounded-xl p-6 flex flex-col gap-2"
+              >
+                <p className="text-white/40 text-sm">{label}</p>
+                <p className="text-2xl font-bold text-white">—</p>
+                <p className="text-xs text-white/20">Coming soon</p>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
-    </main>
+      </main>
+    </ProtectedRoutes>
   );
 }
