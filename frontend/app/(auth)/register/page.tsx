@@ -1,6 +1,7 @@
 "use client";
 
 import api from "@/lib/api";
+import { useAuth } from "@/lib/auth-context";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
@@ -11,6 +12,7 @@ export default function RegisterPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const { refreshUser } = useAuth();
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -27,6 +29,7 @@ export default function RegisterPage() {
       const { token, user } = result.data;
       localStorage.setItem("token", token);
       // Freshly registered gym owner always has gymId: null — always send to onboarding, no check needed
+      refreshUser();
       router.push("/onboarding/gym");
     } catch (error: any) {
       setError(error.response?.data.message || "something went wrong");
