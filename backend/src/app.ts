@@ -17,9 +17,17 @@ export function creatApp() {
 
   //Global Error Handler
   app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+    if (err.name === "ZodError") {
+      const issues = (err as any).issues;
+      return res
+        .status(400)
+        .json({ message: issues?.[0]?.message ?? "Invalid input" });
+    }
+
     if (err instanceof HttpError) {
       return res.status(err.status).json({ message: err.message ?? null });
     }
+
     console.error(err);
     return res.status(500).json({ message: "Internal server error" });
   });

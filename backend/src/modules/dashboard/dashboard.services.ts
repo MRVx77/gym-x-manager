@@ -66,10 +66,10 @@ export async function getDashboardSummary(gymId: string) {
   );
 
   return {
-    totalMember,
-    activeMembers,
-    expiringSoon,
-    newThisMonth,
+    totalMembers: Number(totalMember),
+    activeMembers: Number(activeMembers),
+    expiringSoon: Number(expiringSoon),
+    newThisMonth: Number(newThisMonth),
     revenueThisMonth,
   };
 }

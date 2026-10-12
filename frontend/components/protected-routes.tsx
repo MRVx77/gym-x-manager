@@ -44,7 +44,7 @@ export function ProtectedRoutes({
         try {
           const gymRes = await api.get("/api/gym/get-my-gym");
           if (gymRes.data.gym.onboardingStatus !== "ACTIVE") {
-            router.push("/onbording/details");
+            router.push("/onboarding/details");
             return;
           }
         } catch (error) {
