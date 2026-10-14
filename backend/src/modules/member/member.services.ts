@@ -1,8 +1,9 @@
-import { and, eq, ilike, or } from "drizzle-orm";
+import { and, desc, eq, ilike, inArray, like, or, sql } from "drizzle-orm";
 import { db } from "../../db/db";
-import { members } from "../../db/schema";
+import { members, memberships } from "../../db/schema";
 import { CreateMemberSchema, UpdateMemberSchema } from "./member.schema";
 import { NotFoundError } from "../../lib/errors";
+import { getRemainingDaysAndColor } from "../membership/membership.services";
 
 export async function createMember(gymId: string, input: CreateMemberSchema) {
   const [member] = await db
@@ -21,23 +22,51 @@ export async function createMember(gymId: string, input: CreateMemberSchema) {
 }
 
 export async function getMembers(gymId: string, search?: string) {
-  if (!search) {
-    return db.select().from(members).where(eq(members.gymId, gymId));
-  }
-
-  return db
+  const memberRows = await db
     .select()
     .from(members)
     .where(
-      and(
-        eq(members.gymId, gymId),
-        or(
-          ilike(members.name, `%${search}%`),
-          ilike(members.phone, `%${search}%`),
-          ilike(members.id, `%${search}%`),
-        ),
-      ),
+      search
+        ? and(
+            eq(members.gymId, gymId),
+            or(
+              ilike(members.name, `%${search}%`),
+              ilike(members.phone, `%${search}%`),
+              ilike(sql`${members.id}::text`, `%${search}%`),
+            ),
+          )
+        : eq(members.gymId, gymId),
     );
+
+  if (memberRows.length === 0) return [];
+
+  const membershipRows = await db
+    .select()
+    .from(memberships)
+    .where(
+      inArray(
+        memberships.memberId,
+        memberRows.map((m) => m.id),
+      ),
+    )
+    .orderBy(desc(memberships.createdAt));
+
+  const latestByMember = new Map<string, (typeof membershipRows)[number]>();
+
+  for (const row of membershipRows) {
+    if (!latestByMember.has(row.memberId))
+      latestByMember.set(row.memberId, row);
+  }
+
+  return memberRows.map((m) => {
+    const current = latestByMember.get(m.id);
+    return {
+      ...m,
+      membership: current
+        ? { ...current, ...getRemainingDaysAndColor(current.endDate) }
+        : null,
+    };
+  });
 }
 
 export async function getMemberById(gymId: string, memberId: string) {

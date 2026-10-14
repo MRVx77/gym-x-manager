@@ -11,7 +11,7 @@ function addDays(date: Date, days: number) {
   return result;
 }
 
-function getRemainingDaysAndColor(endDate: string) {
+export function getRemainingDaysAndColor(endDate: string) {
   const today = new Date();
   const end = new Date(endDate);
 
