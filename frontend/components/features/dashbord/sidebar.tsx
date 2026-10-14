@@ -5,11 +5,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const NAV_ITEMS = [
-  { lable: "Dashbord", href: "/dashboard" },
+  { label: "Dashbord", href: "/dashboard" },
   { label: "Members", href: "/dashboard/members" },
-  { lable: "Trainers", href: "/dashboard/trainers" },
-  { lable: "Plans", href: "/dashboard/plans" },
-  { lable: "Notifications", href: "notifications" },
+  { label: "Trainers", href: "/dashboard/trainers" },
+  { label: "Plans", href: "/dashboard/plans" },
+  { label: "Notifications", href: "notifications" },
 ];
 
 export function Sidebar() {

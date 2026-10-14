@@ -22,7 +22,7 @@ export default function DashboardHomePage() {
       try {
         const res = await api.get("/api/dashboard");
         console.log("dashboard: ", res.status, res.data);
-        setSummary(res.data.summary);
+        setSummary(res.data);
       } catch (err: any) {
         console.log(err);
 
