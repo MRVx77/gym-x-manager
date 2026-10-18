@@ -1,6 +1,6 @@
 import { and, eq } from "drizzle-orm";
 import { db } from "../../db/db";
-import { trainers } from "../../db/schema";
+import { members, trainers } from "../../db/schema";
 import { CreateTrainerSchema, UpdateTrainerSchema } from "./trainer.schema";
 import { NotFoundError } from "../../lib/errors";
 
@@ -79,6 +79,11 @@ export async function updateTrainerPhoto(
 }
 
 export async function deleteTrainer(gymId: string, trainerId: string) {
+  await db
+    .update(members)
+    .set({ trainerId: null })
+    .where(and(eq(members.trainerId, trainerId), eq(members.gymId, gymId)));
+
   const [trainer] = await db
     .delete(trainers)
     .where(and(eq(trainers.id, trainerId), eq(trainers.gymId, gymId)))

@@ -35,6 +35,7 @@ export default function NewMemberPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [created, setCreated] = useState(false);
+  const [amountpaid, setAmountpaid] = useState("");
 
   const router = useRouter();
 
@@ -73,7 +74,17 @@ export default function NewMemberPage() {
 
       if (planId) {
         try {
-          await api.post(`/api/membership/${member.id}/assign`, { planId });
+          const assignRes = await api.post(
+            `/api/membership/${member.id}/assign`,
+            { planId },
+          );
+          const amount = Number(amountpaid);
+          if (amount > 0) {
+            await api.post(`/api/members/${member.id}/payments`, {
+              amount,
+              membershipId: assignRes.data.membership.id,
+            });
+          }
         } catch (error: any) {
           setError(
             `Member was created, but assignin the plan failed : ${error.response?.data?.message || "unknow error"}`,
@@ -188,7 +199,12 @@ export default function NewMemberPage() {
           <select
             id="plan"
             value={planId}
-            onChange={(e) => setPlanId(e.target.value)}
+            onChange={(e) => {
+              const id = e.target.value;
+              setPlanId(id);
+              const plan = plans.find((p) => p.id == id);
+              setAmountpaid(plan ? String(Number(plan.price)) : "");
+            }}
             className={inputClass}
           >
             <option value="">Assign later</option>
@@ -199,6 +215,22 @@ export default function NewMemberPage() {
             ))}
           </select>
         </div>
+
+        {planId && (
+          <div>
+            <label htmlFor="amount" className={labelClass}>
+              Amount received (₹) — leave empty if not paid yet
+            </label>
+            <input
+              id="amount"
+              type="number"
+              min="0"
+              value={amountpaid}
+              onChange={(e) => setAmountpaid(e.target.value)}
+              className={inputClass}
+            />
+          </div>
+        )}
 
         <button
           type="submit"
