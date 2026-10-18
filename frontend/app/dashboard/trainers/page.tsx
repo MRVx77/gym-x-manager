@@ -91,7 +91,7 @@ export default function TrainerPage() {
 
     const payload: Record<string, string | number> = { name, gender };
     if (specialization) payload.specialization = specialization;
-    if (experienceYears) payload.experienceYears = experienceYears;
+    if (experienceYears) payload.experienceYears = Number(experienceYears);
     if (pricing != "") payload.pricing = Number(pricing);
 
     try {
