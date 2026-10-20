@@ -39,6 +39,7 @@ export default function TrainerPage() {
   const [experienceYears, setExperienceYears] = useState("");
   const [pricing, setPricing] = useState("");
   const [saving, setSaving] = useState(false);
+  const [uploadingId, setUploadingId] = useState<string | null>(null);
 
   async function loadTrainers() {
     try {
@@ -126,6 +127,22 @@ export default function TrainerPage() {
     }
   }
 
+  async function handlePhotoChange(trainerId: string, file: File | undefined) {
+    if (!file) return;
+    setError("");
+    setUploadingId(trainerId);
+    try {
+      const formData = new FormData();
+      formData.append("photo", file); // must match upload.single("photo") on the backend
+      await api.patch(`/api/trainer/${trainerId}/photo`, formData);
+      await loadTrainers();
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Photo upload failed");
+    } finally {
+      setUploadingId(null);
+    }
+  }
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
@@ -133,7 +150,7 @@ export default function TrainerPage() {
         {!showForm && (
           <button
             onClick={openAdd}
-            className="px-4 py-2 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-500 hover:to-blue-400 transition"
+            className="px-4 py-2 rounded-xl text-sm font-semibold text-white bg-linear-to-r from-purple-600 to-blue-500 hover:from-purple-500 hover:to-blue-400 transition"
           >
             + Add Trainer
           </button>
@@ -233,7 +250,7 @@ export default function TrainerPage() {
             <button
               type="submit"
               disabled={saving}
-              className="px-5 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-500 hover:to-blue-400 transition disabled:opacity-50"
+              className="px-5 py-2.5 rounded-xl font-semibold text-white bg-linear-to-r from-purple-600 to-blue-500 hover:from-purple-500 hover:to-blue-400 transition disabled:opacity-50"
             >
               {saving
                 ? "Saving..."
@@ -315,6 +332,25 @@ export default function TrainerPage() {
                 >
                   Edit
                 </button>
+
+                <label className="text-white/60 hover:text-white cursor-pointer">
+                  {uploadingId === t.id
+                    ? "Uploading..."
+                    : t.profileImage
+                      ? "Change photo"
+                      : "Add photo"}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    disabled={uploadingId === t.id}
+                    onChange={(e) => {
+                      handlePhotoChange(t.id, e.target.files?.[0]);
+                      e.target.value = ""; // lets you pick the same file again later
+                    }}
+                  />
+                </label>
+
                 <button
                   onClick={() => handleDelete(t)}
                   className="text-red-400 hover:text-red-300"

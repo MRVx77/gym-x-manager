@@ -8,7 +8,7 @@ import {
   updateTrainer,
   updateTrainerPhoto,
 } from "./trainer.services";
-import { uploadToCloudinary } from "../../lib/cloudinary";
+import { uploadImage } from "../../lib/cloudinary";
 
 export async function createTrainerHandler(req: Request, res: Response) {
   const input = createTrainerSchema.parse(req.body);
@@ -51,12 +51,10 @@ export async function updateTrainerPhotoHandler(
   const gymId = req.user!.gymId!;
   const trainerId = req.params.trainerId;
 
-  const result = await uploadToCloudinary(
-    req.file.buffer,
-    "gym-manager/trainers",
-  );
+  await getTrainerById(gymId, trainerId);
 
-  const trainer = await updateTrainerPhoto(gymId, trainerId, result.secure_url);
+  const imageUrl = await uploadImage(req.file.buffer, "trainers");
+  const trainer = await updateTrainerPhoto(gymId, trainerId, imageUrl);
 
   res.status(200).json({ trainer });
 }
