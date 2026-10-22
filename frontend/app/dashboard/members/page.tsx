@@ -19,6 +19,7 @@ type Member = {
   joinDate: string;
   membership: Membership | null;
   profilePhotoUrl: string | null;
+  deletedAt: string | null;
 };
 
 const DOT_COLOR = {
@@ -51,6 +52,7 @@ export default function MembershipPage() {
   const [error, setError] = useState("");
   const [uploadingId, setUploadingId] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [showDeleted, setShowDeleted] = useState(false);
 
   //load balancing
   // Wait 300ms after the owner stops typing before calling the API

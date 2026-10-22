@@ -5,6 +5,7 @@ import {
   deleteMember,
   getMemberById,
   getMembers,
+  restoreMember,
   updateMember,
   updateMemberPhoto,
 } from "./member.services";
@@ -56,6 +57,17 @@ export async function deleteMemberHandler(
 ) {
   const gymId = req.user!.gymId!;
   const member = await deleteMember(req.params.id, gymId);
+
+  res.status(200).json({ member });
+}
+
+export async function restoreMemberHandler(
+  req: Request<{ id: string }>,
+  res: Response,
+) {
+  const gymId = req.user!.gymId!;
+  const memberId = req.params.id;
+  const member = await restoreMember(gymId, memberId);
 
   res.status(200).json({ member });
 }

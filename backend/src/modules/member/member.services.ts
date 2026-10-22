@@ -1,4 +1,14 @@
-import { and, desc, eq, ilike, inArray, like, or, sql } from "drizzle-orm";
+import {
+  and,
+  desc,
+  eq,
+  ilike,
+  inArray,
+  isNotNull,
+  isNull,
+  or,
+  sql,
+} from "drizzle-orm";
 import { db } from "../../db/db";
 import { members, memberships } from "../../db/schema";
 import { CreateMemberSchema, UpdateMemberSchema } from "./member.schema";
@@ -29,13 +39,14 @@ export async function getMembers(gymId: string, search?: string) {
       search
         ? and(
             eq(members.gymId, gymId),
+            isNull(members.deletedAt),
             or(
               ilike(members.name, `%${search}%`),
               ilike(members.phone, `%${search}%`),
               ilike(sql`${members.id}::text`, `%${search}%`),
             ),
           )
-        : eq(members.gymId, gymId),
+        : and(eq(members.gymId, gymId), isNull(members.deletedAt)),
     );
 
   if (memberRows.length === 0) return [];
@@ -73,7 +84,13 @@ export async function getMemberById(gymId: string, memberId: string) {
   const [member] = await db
     .select()
     .from(members)
-    .where(and(eq(members.id, memberId), eq(members.gymId, gymId)));
+    .where(
+      and(
+        eq(members.id, memberId),
+        eq(members.gymId, gymId),
+        isNull(members.deletedAt),
+      ),
+    );
 
   if (!member) throw new NotFoundError("Member Not Found");
 
@@ -98,11 +115,36 @@ export async function updateMember(
 
 export async function deleteMember(memberId: string, gymId: string) {
   const [member] = await db
-    .delete(members)
-    .where(and(eq(members.id, memberId), eq(members.gymId, gymId)))
+    .update(members)
+    .set({ deletedAt: new Date() })
+    .where(
+      and(
+        eq(members.id, memberId),
+        eq(members.gymId, gymId),
+        isNull(members.deletedAt), // only soft-delete once
+      ),
+    )
     .returning();
 
   if (!member) throw new NotFoundError("Member Not Found");
+
+  return member;
+}
+
+export async function restoreMember(gymId: string, memberId: string) {
+  const [member] = await db
+    .update(members)
+    .set({ deletedAt: null })
+    .where(
+      and(
+        eq(members.id, memberId),
+        eq(members.gymId, gymId),
+        isNotNull(members.deletedAt),
+      ),
+    )
+    .returning();
+
+  if (!member) throw new NotFoundError("Member Not found");
 
   return member;
 }

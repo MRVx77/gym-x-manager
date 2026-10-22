@@ -5,7 +5,7 @@ export const createMemberSchema = z.object({
   phone: z.string().min(7),
   emergencyContact: z.string().optional(),
   dateOfBirth: z.string().optional(),
-  trainerId: z.uuid().optional(),
+  trainerId: z.uuid().nullable().optional(),
 });
 
 export const updateMemberSchema = createMemberSchema.partial();

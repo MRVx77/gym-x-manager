@@ -70,6 +70,7 @@ export const members = pgTable("members", {
   profilePhotoUrl: text("profile_photo_url"),
   joinDate: date("join_date").defaultNow().notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+  deletedAt: timestamp("deleted_at"),
 });
 
 export const membersRelations = relations(members, ({ one, many }) => ({

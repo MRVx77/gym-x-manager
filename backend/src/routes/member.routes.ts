@@ -4,6 +4,7 @@ import {
   deleteMemberHandler,
   getMemberByIdHandler,
   getMembersHandler,
+  restoreMemberHandler,
   updateMemberHandler,
   updateMemberPhotoHandler,
 } from "../modules/member/member.controller";
@@ -17,6 +18,7 @@ memberRouter.use(authenticate);
 memberRouter.post("/", createMemberHandler);
 memberRouter.get("/all-members", getMembersHandler);
 memberRouter.get("/:id", getMemberByIdHandler);
+memberRouter.patch("/:id/restore", restoreMemberHandler);
 memberRouter.patch(
   "/img/:id",
   upload.single("photo"),
