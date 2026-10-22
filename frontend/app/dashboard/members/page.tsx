@@ -18,6 +18,7 @@ type Member = {
   phone: string;
   joinDate: string;
   membership: Membership | null;
+  profilePhotoUrl: string | null;
 };
 
 const DOT_COLOR = {
@@ -33,12 +34,23 @@ function expiryLabel(m: Membership | null) {
   return `${m.remainingDays} days left`;
 }
 
+function initials(name: string) {
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0].toUpperCase())
+    .join("");
+}
+
 export default function MembershipPage() {
   const [members, setMembers] = useState<Member[]>([]);
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [uploadingId, setUploadingId] = useState<string | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   //load balancing
   // Wait 300ms after the owner stops typing before calling the API
@@ -76,7 +88,23 @@ export default function MembershipPage() {
     return () => {
       cancelled = true;
     };
-  }, [debouncedSearch]);
+  }, [debouncedSearch, refreshKey]);
+
+  async function handlePhotoChange(memberId: string, file: File | undefined) {
+    if (!file) return;
+    setError("");
+    setUploadingId(memberId);
+    try {
+      const formData = new FormData();
+      formData.append("photo", file);
+      await api.patch(`/api/member/img/${memberId}`, formData);
+      setRefreshKey((k) => k + 1); // reload the list to show the new photo
+    } catch (error: any) {
+      setError(error.response?.data?.message || "Photo upload failed");
+    } finally {
+      setUploadingId(null);
+    }
+  }
 
   return (
     <div>
@@ -129,7 +157,37 @@ export default function MembershipPage() {
                   key={m.id}
                   className="border-b border-white/5 last:border-0"
                 >
-                  <td className="px-6 py-4 text-white">{m.name}</td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-3">
+                      <label
+                        className={`cursor-pointer shrink-0 ${uploadingId === m.id ? "opacity-50" : ""}`}
+                        title={m.profilePhotoUrl ? "Change photo" : "Add photo"}
+                      >
+                        {m.profilePhotoUrl ? (
+                          <img
+                            src={m.profilePhotoUrl}
+                            alt={m.name}
+                            className="w-9 h-9 rounded-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-9 h-9 rounded-full bg-purple-600/30 text-purple-200 flex items-center justify-center text-xs font-semibold">
+                            {initials(m.name)}
+                          </div>
+                        )}
+                        <input
+                          type="file"
+                          accept="image/jpeg,image/png,image/webp"
+                          className="hidden"
+                          disabled={uploadingId === m.id}
+                          onChange={(e) => {
+                            handlePhotoChange(m.id, e.target.files?.[0]);
+                            e.target.value = "";
+                          }}
+                        />
+                      </label>
+                      <span className="text-white">{m.name}</span>
+                    </div>
+                  </td>
                   <td className="px-6 py-4 text-white/60">{m.phone}</td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2 text-white/80">

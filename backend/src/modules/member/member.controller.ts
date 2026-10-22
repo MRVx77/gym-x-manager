@@ -8,7 +8,7 @@ import {
   updateMember,
   updateMemberPhoto,
 } from "./member.services";
-import { uploadToCloudinary } from "../../lib/cloudinary";
+import { uploadImage } from "../../lib/cloudinary";
 
 export async function createMemberHandler(req: Request, res: Response) {
   const gymId = req.user!.gymId!;
@@ -71,15 +71,10 @@ export async function updateMemberPhotoHandler(
   const gymId = req.user!.gymId!;
   const memberId = req.params.id;
 
-  const uploadResult = await uploadToCloudinary(
-    req.file.buffer,
-    "gym-manager/members",
-  );
+  await getMemberById(gymId, memberId);
 
-  const member = await updateMemberPhoto(
-    memberId,
-    gymId,
-    uploadResult.secure_url,
-  );
+  const uploadResult = await uploadImage(req.file.buffer, "members");
+
+  const member = await updateMemberPhoto(memberId, gymId, uploadResult);
   res.status(200).json({ member });
 }
