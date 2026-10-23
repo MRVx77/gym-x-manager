@@ -72,7 +72,10 @@ export default function MembershipPage() {
 
       try {
         const res = await api.get("/api/member/all-members", {
-          params: debouncedSearch ? { search: debouncedSearch } : {},
+          params: {
+            ...(debouncedSearch ? { search: debouncedSearch } : {}),
+            includeDeleted: showDeleted,
+          },
         });
         if (!cancelled) setMembers(res.data.members);
       } catch (error: any) {
@@ -90,7 +93,7 @@ export default function MembershipPage() {
     return () => {
       cancelled = true;
     };
-  }, [debouncedSearch, refreshKey]);
+  }, [debouncedSearch, refreshKey, showDeleted]);
 
   async function handlePhotoChange(memberId: string, file: File | undefined) {
     if (!file) return;
@@ -128,6 +131,15 @@ export default function MembershipPage() {
         className="w-full max-w-md mb-6 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/20 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition"
       />
 
+      <label className="flex items-center gap-2 text-sm text-white/60 mb-6">
+        <input
+          type="checkbox"
+          checked={showDeleted}
+          onChange={(e) => setShowDeleted(e.target.checked)}
+        />
+        Show deleted members
+      </label>
+
       {error && (
         <div className="mb-4 px-4 py-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
           {error}
@@ -161,33 +173,45 @@ export default function MembershipPage() {
                 >
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <label
-                        className={`cursor-pointer shrink-0 ${uploadingId === m.id ? "opacity-50" : ""}`}
-                        title={m.profilePhotoUrl ? "Change photo" : "Add photo"}
-                      >
-                        {m.profilePhotoUrl ? (
-                          <img
-                            src={m.profilePhotoUrl}
-                            alt={m.name}
-                            className="w-9 h-9 rounded-full object-cover"
+                      {/* Avatar: click → detail page; camera overlay → upload */}
+                      <div className={`relative shrink-0 group ${uploadingId === m.id ? "opacity-50" : ""}`}>
+                        <Link href={`/dashboard/members/${m.id}`} title="View profile">
+                          {m.profilePhotoUrl ? (
+                            <img
+                              src={m.profilePhotoUrl}
+                              alt={m.name}
+                              className="w-9 h-9 rounded-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-9 h-9 rounded-full bg-purple-600/30 text-purple-200 flex items-center justify-center text-xs font-semibold">
+                              {initials(m.name)}
+                            </div>
+                          )}
+                        </Link>
+                        {/* Camera overlay — visible on hover */}
+                        <label
+                          className="absolute inset-0 rounded-full flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition cursor-pointer"
+                          title="Change photo"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                            <circle cx="12" cy="13" r="4"/>
+                          </svg>
+                          <input
+                            type="file"
+                            accept="image/jpeg,image/png,image/webp"
+                            className="hidden"
+                            disabled={uploadingId === m.id}
+                            onChange={(e) => {
+                              handlePhotoChange(m.id, e.target.files?.[0]);
+                              e.target.value = "";
+                            }}
                           />
-                        ) : (
-                          <div className="w-9 h-9 rounded-full bg-purple-600/30 text-purple-200 flex items-center justify-center text-xs font-semibold">
-                            {initials(m.name)}
-                          </div>
-                        )}
-                        <input
-                          type="file"
-                          accept="image/jpeg,image/png,image/webp"
-                          className="hidden"
-                          disabled={uploadingId === m.id}
-                          onChange={(e) => {
-                            handlePhotoChange(m.id, e.target.files?.[0]);
-                            e.target.value = "";
-                          }}
-                        />
-                      </label>
-                      <span className="text-white">{m.name}</span>
+                        </label>
+                      </div>
+                      <Link href={`/dashboard/members/${m.id}`} className="text-white hover:text-purple-300 transition">
+                        {m.name}
+                      </Link>
                     </div>
                   </td>
                   <td className="px-6 py-4 text-white/60">{m.phone}</td>
