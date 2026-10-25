@@ -209,7 +209,11 @@ export default function MembershipPage() {
                           />
                         </label>
                       </div>
-                      <Link href={`/dashboard/members/${m.id}`} className="text-white hover:text-purple-300 transition">
+                      <Link
+                        href={`/dashboard/members/${m.id}`}
+                        className={`transition ${m.deletedAt ? "line-through text-white/40 hover:text-red-400 decoration-red-500" : "text-white hover:text-purple-300"}`}
+                        title={m.deletedAt ? "Deleted member" : undefined}
+                      >
                         {m.name}
                       </Link>
                     </div>

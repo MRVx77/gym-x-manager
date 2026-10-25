@@ -24,7 +24,8 @@ export async function getMembersHandler(req: Request, res: Response) {
   const gymId = req.user!.gymId!;
   const search =
     typeof req.query.search === "string" ? req.query.search : undefined;
-  const members = await getMembers(gymId, search as string);
+  const includeDeleted = req.query.includeDeleted === "true";
+  const members = await getMembers(gymId, search, includeDeleted);
 
   res.status(200).json({ members });
 }

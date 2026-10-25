@@ -1,8 +1,8 @@
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, isNull } from "drizzle-orm";
 import { db } from "../../db/db";
 import { members, membershipPlans, memberships } from "../../db/schema";
 import { AssignMemberShipeInput } from "./membership.schema";
-import { NotFoundError } from "../../lib/errors";
+import { BadRequestError, NotFoundError } from "../../lib/errors";
 
 //helper functions
 function addDays(date: Date, days: number) {
@@ -34,7 +34,13 @@ export async function assignMembership(
   const [member] = await db
     .select()
     .from(members)
-    .where(and(eq(members.gymId, gymId), eq(members.id, memberId)));
+    .where(
+      and(
+        eq(members.gymId, gymId),
+        eq(members.id, memberId),
+        isNull(members.deletedAt),
+      ),
+    );
 
   if (!member) throw new NotFoundError("Member not Found");
 
@@ -46,7 +52,7 @@ export async function assignMembership(
     );
 
   if (existingActive)
-    throw new Error(
+    throw new BadRequestError(
       "Member already has an active membership. Please renew instead.",
     );
 

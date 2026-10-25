@@ -31,7 +31,11 @@ export async function createMember(gymId: string, input: CreateMemberSchema) {
   return member;
 }
 
-export async function getMembers(gymId: string, search?: string) {
+export async function getMembers(
+  gymId: string,
+  search?: string,
+  includeDeleted = false,
+) {
   const memberRows = await db
     .select()
     .from(members)
@@ -39,14 +43,17 @@ export async function getMembers(gymId: string, search?: string) {
       search
         ? and(
             eq(members.gymId, gymId),
-            isNull(members.deletedAt),
+            includeDeleted ? undefined : isNull(members.deletedAt),
             or(
               ilike(members.name, `%${search}%`),
               ilike(members.phone, `%${search}%`),
               ilike(sql`${members.id}::text`, `%${search}%`),
             ),
           )
-        : and(eq(members.gymId, gymId), isNull(members.deletedAt)),
+        : and(
+            eq(members.gymId, gymId),
+            includeDeleted ? undefined : isNull(members.deletedAt),
+          ),
     );
 
   if (memberRows.length === 0) return [];
