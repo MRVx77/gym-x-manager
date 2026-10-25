@@ -55,6 +55,7 @@ export async function getMemberNotification(gymId: string, memberId: string) {
         or(
           eq(notifications.memberId, memberId),
           isNull(notifications.memberId),
+          isNull(members.deletedAt),
         ),
       ),
     )
